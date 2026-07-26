@@ -1,0 +1,39 @@
+{
+  "name": "english-learning-miniapp",
+  "version": "2.0.0",
+  "description": "Persian-to-English Learning - Telegram Mini App based on 4000 Essential English Words",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "tsc",
+    "start": "npm run migrate && npm run seed && node dist/index.js",
+    "dev": "ts-node-dev --respawn index.ts",
+    "migrate": "ts-node src/database/migrate.ts",
+    "seed": "ts-node src/database/seed.ts",
+    "setup": "npm run migrate && npm run seed",
+    "postinstall": "npm run build"
+  },
+  "dependencies": {
+    "telegraf": "^4.16.3",
+    "better-sqlite3": "^11.7.0",
+    "express": "^4.21.2",
+    "cors": "^2.8.5",
+    "helmet": "^8.0.0",
+    "openai": "^4.77.0",
+    "dotenv": "^16.4.7",
+    "winston": "^3.17.0",
+    "node-cron": "^3.0.3"
+  },
+  "devDependencies": {
+    "@types/better-sqlite3": "^7.6.12",
+    "@types/express": "^5.0.0",
+    "@types/cors": "^2.8.17",
+    "@types/node": "^22.10.5",
+    "@types/node-cron": "^3.0.11",
+    "typescript": "^5.7.3",
+    "ts-node": "^10.9.2",
+    "ts-node-dev": "^2.0.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

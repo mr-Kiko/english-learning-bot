@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>یادگیری انگلیسی</title>
+    <link rel="stylesheet" href="css/style.css">
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+</head>
+<body>
+    <div id="app">
+        <!-- Loading -->
+        <div id="loading-screen" class="screen active">
+            <div class="loader"></div>
+            <p>در حال بارگذاری...</p>
+        </div>
+
+        <!-- Main Menu -->
+        <div id="main-menu" class="screen">
+            <div class="header">
+                <div class="user-info">
+                    <div class="avatar" id="user-avatar">👤</div>
+                    <div>
+                        <h2 id="user-name">کاربر</h2>
+                        <span class="level-badge" id="user-level">سطح ۱</span>
+                    </div>
+                </div>
+                <div class="streak" id="user-streak">🔥 0</div>
+            </div>
+
+            <div class="stats-row">
+                <div class="stat-card">
+                    <div class="stat-number" id="stat-learned">0</div>
+                    <div class="stat-label">یادگرفته</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="stat-mastered">0</div>
+                    <div class="stat-label">تسلط کامل</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="stat-due">0</div>
+                    <div class="stat-label">مرور امروز</div>
+                </div>
+            </div>
+
+            <div class="menu-grid">
+                <button class="menu-btn" onclick="showScreen('learn-screen')">
+                    <span class="menu-icon">📚</span>
+                    <span>شروع یادگیری</span>
+                </button>
+                <button class="menu-btn" onclick="showScreen('lessons-screen')">
+                    <span class="menu-icon">📖</span>
+                    <span>درس‌ها</span>
+                </button>
+                <button class="menu-btn" onclick="startQuiz()">
+                    <span class="menu-icon">🎯</span>
+                    <span>کوییز روزانه</span>
+                </button>
+                <button class="menu-btn" onclick="showScreen('progress-screen')">
+                    <span class="menu-icon">📊</span>
+                    <span>پیشرفت من</span>
+                </button>
+                <button class="menu-btn" onclick="showScreen('search-screen')">
+                    <span class="menu-icon">🔍</span>
+                    <span>جستجو</span>
+                </button>
+                <button class="menu-btn" onclick="showScreen('ai-screen')">
+                    <span class="menu-icon">🤖</span>
+                    <span>دستیار AI</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Learn Screen -->
+        <div id="learn-screen" class="screen">
+            <div class="screen-header">
+                <button class="back-btn" onclick="showScreen('main-menu')">→</button>
+                <h2>📚 شروع یادگیری</h2>
+            </div>
+
+            <div id="learn-options">
+                <div class="option-card" id="due-words-card" onclick="startReview()">
+                    <div class="option-icon">🔄</div>
+                    <div class="option-info">
+                        <h3>مرور واژگان</h3>
+                        <p id="due-count">0 واژه در انتظار مرور</p>
+                    </div>
+                </div>
+                <div class="option-card" onclick="startNewLesson()">
+                    <div class="option-icon">📚</div>
+                    <div class="option-info">
+                        <h3>درس جدید</h3>
+                        <p id="current-lesson-info">واژگان جدید یاد بگیرید</p>
+                    </div>
+                </div>
+            </div>
+
+            <div id="word-card-container" class="hidden">
+                <div class="progress-bar">
+                    <div class="progress-fill" id="word-progress"></div>
+                </div>
+                <div class="word-card">
+                    <div class="word-english" id="current-word">-</div>
+                    <div class="word-phonetic" id="current-phonetic">-</div>
+                    <button class="pronunciation-btn" onclick="playPronunciation()">🔊</button>
+                    <div class="word-meaning" id="current-meaning">-</div>
+                    <div class="word-definition" id="current-definition">-</div>
+                    <div class="word-example">
+                        <p class="example-en" id="current-example">-</p>
+                        <p class="example-fa" id="current-example-fa">-</p>
+                    </div>
+                </div>
+                <div class="word-actions">
+                    <button class="btn btn-success" onclick="markWord(true)">✅ یاد گرفتم</button>
+                    <button class="btn btn-warning" onclick="markWord(false)">🔄 مرور مجدد</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Lessons Screen -->
+        <div id="lessons-screen" class="screen">
+            <div class="screen-header">
+                <button class="back-btn" onclick="showScreen('main-menu')">→</button>
+                <h2>📖 درس‌ها</h2>
+            </div>
+            <div id="lessons-list" class="lessons-list"></div>
+        </div>
+
+        <!-- Quiz Screen -->
+        <div id="quiz-screen" class="screen">
+            <div class="screen-header">
+                <button class="back-btn" onclick="endQuiz()">→</button>
+                <h2>🎯 کوییز</h2>
+                <div class="quiz-score" id="quiz-score">0/0</div>
+            </div>
+
+            <div class="progress-bar">
+                <div class="progress-fill" id="quiz-progress"></div>
+            </div>
+
+            <div id="quiz-content">
+                <!-- Quiz question will be rendered here -->
+            </div>
+        </div>
+
+        <!-- Quiz Result -->
+        <div id="quiz-result" class="screen">
+            <div class="result-card">
+                <div class="result-emoji" id="result-emoji">🏆</div>
+                <h2>نتیجه کوییز</h2>
+                <div class="result-score" id="result-score">0%</div>
+                <div class="result-stats">
+                    <div class="result-stat">
+                        <span class="correct" id="result-correct">0</span>
+                        <span>صحیح</span>
+                    </div>
+                    <div class="result-stat">
+                        <span class="wrong" id="result-wrong">0</span>
+                        <span>غلط</span>
+                    </div>
+                </div>
+                <p id="result-message">آفرین!</p>
+                <button class="btn btn-primary" onclick="showScreen('main-menu')">🏠 منوی اصلی</button>
+            </div>
+        </div>
+
+        <!-- Progress Screen -->
+        <div id="progress-screen" class="screen">
+            <div class="screen-header">
+                <button class="back-btn" onclick="showScreen('main-menu')">→</button>
+                <h2>📊 پیشرفت من</h2>
+            </div>
+
+            <div class="progress-details">
+                <div class="progress-card">
+                    <h3>👤 اطلاعات کاربری</h3>
+                    <div class="progress-row">
+                        <span>سطح فعلی</span>
+                        <span id="progress-level">1</span>
+                    </div>
+                    <div class="progress-row">
+                        <span>واحد فعلی</span>
+                        <span id="progress-unit">1</span>
+                    </div>
+                    <div class="progress-row">
+                        <span>سری یادگیری</span>
+                        <span id="progress-streak">0 روز 🔥</span>
+                    </div>
+                </div>
+
+                <div class="progress-card">
+                    <h3>📖 واژگان</h3>
+                    <div class="progress-row">
+                        <span>یادگرفته شده</span>
+                        <span id="progress-learned">0</span>
+                    </div>
+                    <div class="progress-row">
+                        <span>تسلط کامل</span>
+                        <span id="progress-mastered">0</span>
+                    </div>
+                    <div class="progress-row">
+                        <span>میانگین تسلط</span>
+                        <span id="progress-avg">0%</span>
+                    </div>
+                </div>
+
+                <div class="progress-card">
+                    <h3>🎯 کوییز</h3>
+                    <div class="progress-row">
+                        <span>بهترین نمره</span>
+                        <span id="progress-best">0%</span>
+                    </div>
+                    <div id="quiz-history"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Search Screen -->
+        <div id="search-screen" class="screen">
+            <div class="screen-header">
+                <button class="back-btn" onclick="showScreen('main-menu')">→</button>
+                <h2>🔍 جستجو</h2>
+            </div>
+            <div class="search-box">
+                <input type="text" id="search-input" placeholder="جستجوی واژه..." oninput="searchWords()">
+            </div>
+            <div id="search-results" class="search-results"></div>
+        </div>
+
+        <!-- AI Screen -->
+        <div id="ai-screen" class="screen">
+            <div class="screen-header">
+                <button class="back-btn" onclick="showScreen('main-menu')">→</button>
+                <h2>🤖 دستیار AI</h2>
+            </div>
+
+            <div class="ai-options">
+                <div class="ai-option" onclick="showAISection('grammar')">
+                    <span>📝</span>
+                    <span>توضیح گرامر</span>
+                </div>
+                <div class="ai-option" onclick="showAISection('examples')">
+                    <span>💡</span>
+                    <span>مثال‌های بیشتر</span>
+                </div>
+                <div class="ai-option" onclick="showAISection('correct')">
+                    <span>✏️</span>
+                    <span>تصحیح جمله</span>
+                </div>
+                <div class="ai-option" onclick="showAISection('conversation')">
+                    <span>💬</span>
+                    <span>مکالمه</span>
+                </div>
+            </div>
+
+            <div id="ai-sections">
+                <div id="ai-grammar" class="ai-section hidden">
+                    <h3>📝 توضیح گرامر</h3>
+                    <input type="text" id="grammar-input" placeholder="گرامر مورد نظر را بنویسید...">
+                    <button class="btn btn-primary" onclick="getGrammarExplanation()">توضیح بده</button>
+                    <div id="grammar-result" class="ai-result hidden"></div>
+                </div>
+
+                <div id="ai-examples" class="ai-section hidden">
+                    <h3>💡 مثال‌های بیشتر</h3>
+                    <input type="text" id="example-word-input" placeholder="کلمه مورد نظر...">
+                    <button class="btn btn-primary" onclick="getExamples()">مثال بساز</button>
+                    <div id="examples-result" class="ai-result hidden"></div>
+                </div>
+
+                <div id="ai-correct" class="ai-section hidden">
+                    <h3>✏️ تصحیح جمله</h3>
+                    <textarea id="correct-input" placeholder="جمله انگلیسی خود را بنویسید..."></textarea>
+                    <button class="btn btn-primary" onclick="getCorrection()">تصحیح کن</button>
+                    <div id="correction-result" class="ai-result hidden"></div>
+                </div>
+
+                <div id="ai-conversation" class="ai-section hidden">
+                    <h3>💬 مکالمه</h3>
+                    <div id="conversation-history" class="conversation-history"></div>
+                    <div class="conversation-input">
+                        <input type="text" id="conversation-input" placeholder="پیام خود را بنویسید..." onkeypress="if(event.key==='Enter')sendConversation()">
+                        <button class="btn btn-primary" onclick="sendConversation()">ارسال</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Settings Screen -->
+        <div id="settings-screen" class="screen">
+            <div class="screen-header">
+                <button class="back-btn" onclick="showScreen('main-menu')">→</button>
+                <h2>⚙️ تنظیمات</h2>
+            </div>
+            <div class="settings-content">
+                <div class="setting-item">
+                    <label>تعداد واژه روزانه</label>
+                    <select id="daily-words-select" onchange="updateSettings()">
+                        <option value="5">۵ واژه</option>
+                        <option value="10">۱۰ واژه</option>
+                        <option value="15">۱۵ واژه</option>
+                        <option value="20">۲۰ واژه</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/app.js"></script>
+</body>
+</html>

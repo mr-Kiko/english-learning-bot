@@ -1,0 +1,24 @@
+services:
+  - type: web
+    name: english-learning-bot
+    runtime: node
+    plan: free
+    buildCommand: npm install && npm run build
+    startCommand: npm run start
+    envVars:
+      - key: BOT_TOKEN
+        sync: false
+      - key: ADMIN_IDS
+        sync: false
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 10000
+      - key: DATABASE_PATH
+        value: ./data/bot.db
+      - key: JWT_SECRET
+        generateValue: true
+      - key: WEBAPP_URL
+        sync: false
+      - key: BOT_WEBAPP_URL
+        sync: false
