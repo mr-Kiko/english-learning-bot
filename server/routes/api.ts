@@ -1,7 +1,7 @@
 import { Router, Request, Response } from 'express';
 import { config } from '../../config';
 import { UserRepository, WordRepository, ProgressRepository, QuizRepository } from '../../src/database/repository';
-import { verifyTelegramWebAppData } from '../../utils/tg-auth';
+import { verifyTelegramWebAppData } from '../../src/utils/tg-auth';
 import { explainGrammarPersian, generateExamples, correctSentence, conversationPractice } from '../../src/services/ai';
 import { getWordAudioUrl } from '../../src/services/speech';
 import logger from '../../src/utils/logger';
