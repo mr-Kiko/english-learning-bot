@@ -2,11 +2,11 @@ FROM node:18-alpine
 
 WORKDIR /app
 
-# Copy package files
+# Copy package files first (for caching)
 COPY package*.json ./
 
-# Install ALL dependencies (including dev for build)
-RUN npm ci
+# Install dependencies
+RUN npm install
 
 # Copy source code
 COPY tsconfig.json ./
@@ -18,14 +18,11 @@ COPY public/ ./public/
 COPY data/words-raw.json ./data/words-raw.json
 
 # Build TypeScript
-RUN npm run build
-
-# Remove dev dependencies
-RUN npm prune --production
+RUN npx tsc
 
 # Create data directory
 RUN mkdir -p data
 
 EXPOSE 3000
 
-CMD ["sh", "-c", "npm run migrate && npm run seed && node dist/index.js"]
+CMD ["sh", "-c", "node dist/index.js"]

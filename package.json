@@ -9,8 +9,7 @@
     "dev": "ts-node-dev --respawn index.ts",
     "migrate": "ts-node src/database/migrate.ts",
     "seed": "ts-node src/database/seed.ts",
-    "setup": "npm run migrate && npm run seed",
-    "postinstall": "npm run build"
+    "setup": "npm run migrate && npm run seed"
   },
   "dependencies": {
     "telegraf": "^4.16.3",
