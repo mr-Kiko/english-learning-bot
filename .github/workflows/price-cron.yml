@@ -1,0 +1,12 @@
+name: Send Prices
+
+on:
+  schedule:
+    - cron: '*/10 * * * *'
+  workflow_dispatch:
+
+jobs:
+  send:
+    runs-on: ubuntu-latest
+    steps:
+      - run: curl -s "https://price-bot-gamma.vercel.app/api/cron"
